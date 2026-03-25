@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fireworks Celebration 🎆</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --stars: 120;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            background: radial-gradient(circle at top, #070a20 0%, #02030c 35%, #000 100%);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: transform 10s ease-in-out;
+        }
+
+        .scene-zoom {
+            animation: slowZoom 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowZoom {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .star {
+            position: fixed;
+            width: 2px;
+            height: 2px;
+            border-radius: 50%;
+            background: white;
+            opacity: 0;
+            animation: twinkle 3s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .particle-rain {
+            position: fixed;
+            width: 1px;
+            height: 1px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+            animation: rainFall 3s linear infinite;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes rainFall {
+            0% { transform: translateY(-10vh); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(110vh); opacity: 0; }
+        }
+
+        #content {
+            position: relative;
+            z-index: 20;
+            max-width: 92vw;
+            padding: 1rem;
+        }
+
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: clamp(2rem, 8vw, 4rem);
+            margin: 0;
+            letter-spacing: 1px;
+            color: #f9f5ff;
+            text-shadow:
+                0 0 10px rgba(255,255,255,0.9),
+                0 0 30px rgba(173, 156, 255, 0.8),
+                0 0 50px rgba(123, 101, 255, 0.7);
+            animation: fadeInText 2s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInText {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .wish-btn {
+            border: none;
+            border-radius: 999px;
+            padding: 0.9rem 1.25rem;
+            min-width: 170px;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, #ff8bc4, #8150ff, #4ab8ff);
+            box-shadow: 0 0 15px rgba(255, 139, 196, 0.5), 0 0 30px rgba(74, 183, 255, 0.35);
+            cursor: pointer;
+            transition: transform .2s ease, box-shadow .3s ease, filter .3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wish-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.1);
+            box-shadow: 0 0 21px rgba(255, 139, 196, 0.8), 0 0 40px rgba(74, 183, 255, 0.5);
+        }
+
+        .wish-btn:active {
+            transform: scale(0.98);
+        }
+
+        .feedback {
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(7, 8, 30, 0.95);
+            border: 1px solid rgba(255,255,255,0.25);
+            border-radius: 14px;
+            padding: 1rem 1.3rem;
+            color: #ffffff;
+            font-size: 1rem;
+            z-index: 40;
+            opacity: 0;
+            pointer-events: none;
+            backdrop-filter: blur(6px);
+            transition: opacity 0.25s ease;
+        }
+
+        .feedback.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .feedback-text {
+            line-height: 1.6;
+            text-align: left;
+            max-width: min(88vw, 460px);
+            white-space: normal;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-close {
+            border: none;
+            border-radius: 999px;
+            padding: 0.7rem 1.1rem;
+            background: linear-gradient(135deg, #ff8bc4, #8150ff, #4ab8ff);
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        #fireworks-speed {
+            position: fixed;
+            left: 1rem;
+            bottom: 1rem;
+            color: #b1c2f2;
+            padding: 0.35rem .7rem;
+            border-radius: 10px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(180, 192, 255, 0.35);
+            font-size: 0.8rem;
+            z-index: 15;
+        }
+
+        .heart {
+            position: fixed;
+            width: 16px;
+            height: 16px;
+            background: linear-gradient(45deg, #ff3e96, #ff5988);
+            transform: rotate(45deg);
+            opacity: 0.8;
+            animation: floatHeart 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ff3e96, #ff5988);
+        }
+
+        .heart::before { top: -8px; left: 0; }
+        .heart::after { left: 8px; top: 0; }
+
+        @keyframes floatHeart {
+            0% { transform: translate(0, 0) rotate(45deg); opacity: 0.9; }
+            100% { transform: translate(0, -220px) rotate(45deg); opacity: 0; }
+        }
+
+        @media (max-width: 720px) {
+            h1 { font-size: clamp(1.6rem, 9vw, 3rem); }
+            .buttons { gap: 0.5rem; }
+            .wish-btn { min-width: 140px; font-size: 0.92rem; }
+            #fireworks-speed { left: 0.6rem; bottom: 0.6rem; font-size: 0.7rem; }
+        }
+
+        @media (max-width: 420px) {
+            h1 { font-size: clamp(1.4rem, 11vw, 2.4rem); }
+            .wish-btn { padding: 0.75rem 1rem; min-width: 120px; }
+        }
+    </style>
+</head>
+<body class="scene-zoom">
+    <canvas id="fireworks-canvas"></canvas>
+
+    <div id="content">
+        <h1>Happy Birthday Stevanny</h1>
+        <div class="buttons">
+            <button class="wish-btn" data-wish="Hey Stevanny, happy birthday to you 🎉🎂 You’re not alone, we’re here with you. I hope this year brings you happiness, peace, and everything you wish for. You deserve to feel loved and appreciated. Enjoy your day, smile a lot, and take care always 😊✨">💌 Wish from you twin</button>
+            <button class="wish-btn" data-wish="💖 Chaa sends love: May your day be magical!">💖 Wish from chaa</button>
+        </div>
+    </div>
+
+    <div id="fireworks-speed">Time-based animation: Constant speed regardless of FPS</div>
+    <div id="feedback" class="feedback">
+        <div id="feedback-text" class="feedback-text"></div>
+        <button id="feedback-close" class="feedback-close" type="button">Back</button>
+    </div>
+
+    <!-- Background Music -->
+    <audio id="bg-music" loop preload="auto" playsinline crossorigin="anonymous">
+        <!-- Free Happy Birthday piano instrumental -->
+        <source src="https://www.soundjay.com/misc/sounds/happy-birthday-piano-instrumental.mp3" type="audio/mpeg">
+        <source src="https://www.soundjay.com/misc/sounds/happy-birthday-piano-instrumental.wav" type="audio/wav">
+        <!-- Fallback: Simple bell sound if piano not available -->
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+    </audio>
+
+    <script>
+        const isEmbeddedShell = window.self !== window.top;
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        const isMobile = window.innerWidth < 768;
+        const isSmallScreen = window.innerWidth < 480;
+        const particleScale = isSmallScreen ? 0.4 : isMobile ? 0.6 : 1;
+        const maxFireworks = isSmallScreen ? 2 : isMobile ? 3 : 4; // Max 3-4 fireworks at same time
+        const maxParticlesPerExplosion = isSmallScreen ? 15 : isMobile ? 20 : 30; // Reduce particles on smaller screens
+
+        let fireworks = [];
+        let particles = [];
+        let animationId;
+        let lastTime = 0; // For delta time calculation
+        let bgMusic = document.getElementById('bg-music');
+        let musicStarted = false;
+        let musicReady = false;
+        let musicFallbackBound = false;
+        let fadeInterval = null;
+        let musicSourceFailed = false;
+        let synthContext = null;
+        let synthGain = null;
+        let synthStarted = false;
+        let synthLoopTimeout = null;
+
+        const NOTE_FREQUENCIES = {
+            C4: 261.63,
+            D4: 293.66,
+            E4: 329.63,
+            F4: 349.23,
+            G4: 392.00,
+            A4: 440.00,
+            AS4: 466.16,
+            C5: 523.25
+        };
+
+        const HAPPY_BIRTHDAY_MELODY = [
+            ['C4', 0.32], ['C4', 0.18], ['D4', 0.5], ['C4', 0.5], ['F4', 0.5], ['E4', 0.9],
+            ['C4', 0.32], ['C4', 0.18], ['D4', 0.5], ['C4', 0.5], ['G4', 0.5], ['F4', 0.9],
+            ['C4', 0.32], ['C4', 0.18], ['C5', 0.5], ['A4', 0.5], ['F4', 0.5], ['E4', 0.5], ['D4', 0.9],
+            ['AS4', 0.32], ['AS4', 0.18], ['A4', 0.5], ['F4', 0.5], ['G4', 0.5], ['F4', 1.1]
+        ];
+
+        const MUSIC_STORAGE_KEY = 'birthdayMusicPlaying';
+        const MUSIC_TIME_KEY = 'birthdayMusicTime';
+        const MUSIC_VOLUME_KEY = 'birthdayMusicVolume';
+        const DEFAULT_MUSIC_VOLUME = 0.45;
+
+        // Music management functions
+        function initMusic() {
+            if (isEmbeddedShell) {
+                return;
+            }
+
+            bgMusic.load();
+
+            bgMusic.addEventListener('canplay', () => {
+                musicReady = true;
+            });
+
+            bgMusic.addEventListener('error', () => {
+                console.log('Music failed to load:', bgMusic.currentSrc || 'no source');
+                musicSourceFailed = true;
+            });
+
+            const savedTime = parseFloat(sessionStorage.getItem(MUSIC_TIME_KEY) || '0');
+            if (!Number.isNaN(savedTime) && savedTime > 0) {
+                bgMusic.currentTime = savedTime;
+            }
+
+            // Always start music on fireworks page since it's the celebration
+            startMusicWithFadeIn();
+        }
+
+        function startMusicWithFadeIn() {
+            if (musicStarted) return; // Prevent multiple starts
+            musicStarted = true;
+            const shouldResume = sessionStorage.getItem(MUSIC_STORAGE_KEY) === 'true';
+            const savedTime = parseFloat(sessionStorage.getItem(MUSIC_TIME_KEY) || '0');
+            const targetVolume = parseFloat(sessionStorage.getItem(MUSIC_VOLUME_KEY) || String(DEFAULT_MUSIC_VOLUME));
+
+            if (musicSourceFailed || bgMusic.querySelectorAll('source').length === 0) {
+                startSynthMusicWithFadeIn();
+                return;
+            }
+
+            if (!Number.isNaN(savedTime) && savedTime > 0) {
+                bgMusic.currentTime = savedTime;
+            }
+
+            // Set initial volume to 0
+            bgMusic.volume = shouldResume ? targetVolume : 0;
+            bgMusic.muted = false;
+
+            // Try to start playing immediately (may be blocked by browser)
+            const playPromise = bgMusic.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    if (shouldResume) {
+                        bgMusic.volume = targetVolume;
+                        persistMusicState();
+                    } else {
+                        performFadeIn();
+                    }
+                }).catch(error => {
+                    console.log('Music autoplay blocked by browser, will start on user interaction:', error);
+                    if (error && error.name !== 'NotAllowedError') {
+                        musicSourceFailed = true;
+                    }
+                    // Set up fallback for user interaction
+                    setupMusicFallback();
+                });
+            }
+        }
+
+        function performFadeIn() {
+            if (fadeInterval) {
+                clearInterval(fadeInterval);
+            }
+
+            // Fade in over 3 seconds to target volume
+            const targetVolume = parseFloat(sessionStorage.getItem(MUSIC_VOLUME_KEY) || String(DEFAULT_MUSIC_VOLUME));
+            const fadeDuration = 3000; // 3 seconds
+            const fadeSteps = 60; // 60 fps
+            const volumeStep = targetVolume / fadeSteps;
+            const stepDuration = fadeDuration / fadeSteps;
+
+            let currentStep = 0;
+            fadeInterval = setInterval(() => {
+                currentStep++;
+                bgMusic.volume = Math.min(volumeStep * currentStep, targetVolume);
+
+                if (currentStep >= fadeSteps) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+                    persistMusicState();
+                }
+            }, stepDuration);
+        }
+
+        function persistMusicState() {
+            const audioPlaying = bgMusic && !bgMusic.paused && !bgMusic.ended;
+            if (!audioPlaying && !synthStarted) {
+                return;
+            }
+
+            sessionStorage.setItem(MUSIC_STORAGE_KEY, 'true');
+            sessionStorage.setItem(MUSIC_VOLUME_KEY, String(DEFAULT_MUSIC_VOLUME));
+            if (audioPlaying && !Number.isNaN(bgMusic.currentTime)) {
+                sessionStorage.setItem(MUSIC_TIME_KEY, String(bgMusic.currentTime));
+            }
+        }
+
+        function setupMusicFallback() {
+            if (musicFallbackBound) return;
+            musicFallbackBound = true;
+
+            // Add event listeners for user interaction fallback
+            const startMusicOnInteraction = () => {
+                if (!musicStarted) {
+                    musicStarted = true;
+                }
+
+                if (musicSourceFailed || bgMusic.querySelectorAll('source').length === 0) {
+                    startSynthMusicWithFadeIn();
+                    document.removeEventListener('click', startMusicOnInteraction);
+                    document.removeEventListener('touchstart', startMusicOnInteraction);
+                    document.removeEventListener('keydown', startMusicOnInteraction);
+                    musicFallbackBound = false;
+                    return;
+                }
+
+                bgMusic.muted = false;
+
+                bgMusic.play().then(() => {
+                    performFadeIn();
+                    // Remove listeners after successful start
+                    document.removeEventListener('click', startMusicOnInteraction);
+                    document.removeEventListener('touchstart', startMusicOnInteraction);
+                    document.removeEventListener('keydown', startMusicOnInteraction);
+                    musicFallbackBound = false;
+                }).catch(error => {
+                    console.log('Fallback music start failed:', error);
+                    musicSourceFailed = true;
+                    startSynthMusicWithFadeIn();
+                    document.removeEventListener('click', startMusicOnInteraction);
+                    document.removeEventListener('touchstart', startMusicOnInteraction);
+                    document.removeEventListener('keydown', startMusicOnInteraction);
+                    musicFallbackBound = false;
+                });
+            };
+
+            document.addEventListener('click', startMusicOnInteraction, { once: true });
+            document.addEventListener('touchstart', startMusicOnInteraction, { once: true });
+            document.addEventListener('keydown', startMusicOnInteraction, { once: true });
+        }
+
+        function ensureSynthContext() {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) {
+                return null;
+            }
+
+            if (!synthContext) {
+                synthContext = new AudioContextClass();
+                synthGain = synthContext.createGain();
+                synthGain.gain.value = 0;
+                synthGain.connect(synthContext.destination);
+            }
+
+            return synthContext;
+        }
+
+        function playSynthMelody() {
+            if (!synthContext || !synthGain) return;
+
+            let cursor = synthContext.currentTime + 0.05;
+            HAPPY_BIRTHDAY_MELODY.forEach(([note, duration]) => {
+                const oscillator = synthContext.createOscillator();
+                const noteGain = synthContext.createGain();
+                const endTime = cursor + duration;
+
+                oscillator.type = 'sine';
+                oscillator.frequency.value = NOTE_FREQUENCIES[note];
+
+                noteGain.gain.setValueAtTime(0.0001, cursor);
+                noteGain.gain.linearRampToValueAtTime(0.18, cursor + 0.03);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, endTime);
+
+                oscillator.connect(noteGain);
+                noteGain.connect(synthGain);
+
+                oscillator.start(cursor);
+                oscillator.stop(endTime);
+                cursor = endTime + 0.03;
+            });
+
+            synthLoopTimeout = window.setTimeout(playSynthMelody, Math.max((cursor - synthContext.currentTime) * 1000, 1000));
+        }
+
+        function startSynthMusicWithFadeIn() {
+            const ctx = ensureSynthContext();
+            if (!ctx) return;
+
+            const beginPlayback = () => {
+                if (synthStarted) return;
+                synthStarted = true;
+
+                const now = ctx.currentTime;
+                synthGain.gain.cancelScheduledValues(now);
+                synthGain.gain.setValueAtTime(synthGain.gain.value, now);
+                synthGain.gain.linearRampToValueAtTime(0.2, now + 1.8);
+                playSynthMelody();
+                sessionStorage.setItem(MUSIC_STORAGE_KEY, 'true');
+                sessionStorage.setItem(MUSIC_VOLUME_KEY, String(DEFAULT_MUSIC_VOLUME));
+            };
+
+            if (ctx.state === 'suspended') {
+                ctx.resume().then(beginPlayback).catch(error => {
+                    console.log('Synth music start failed:', error);
+                });
+            } else {
+                beginPlayback();
+            }
+        }
+
+        function stopMusic() {
+            if (bgMusic) {
+                if (fadeInterval) {
+                    clearInterval(fadeInterval);
+                    fadeInterval = null;
+                }
+                bgMusic.pause();
+                bgMusic.currentTime = 0;
+                sessionStorage.setItem(MUSIC_STORAGE_KEY, 'false');
+                sessionStorage.removeItem(MUSIC_TIME_KEY);
+                musicStarted = false;
+            }
+
+            if (synthLoopTimeout) {
+                clearTimeout(synthLoopTimeout);
+                synthLoopTimeout = null;
+            }
+
+            if (synthGain && synthContext) {
+                const now = synthContext.currentTime;
+                synthGain.gain.cancelScheduledValues(now);
+                synthGain.gain.setValueAtTime(synthGain.gain.value, now);
+                synthGain.gain.linearRampToValueAtTime(0.0001, now + 0.3);
+            }
+
+            synthStarted = false;
+        }
+
+        window.addEventListener('pagehide', persistMusicState);
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'hidden' && !bgMusic.paused) {
+                persistMusicState();
+            }
+        });
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        function randomColor() {
+            const colors = ['#ff7f50', '#ffa07a', '#ffff99', '#ffffff', '#87ceeb']; // Softer colors
+            return colors[Math.floor(random(0, colors.length))];
+        }
+
+        class Rocket {
+            constructor(x, targetY) {
+                this.x = x;
+                this.y = canvas.height;
+                this.targetY = targetY;
+                this.speed = random(360, 540); // Pixels per second (was 6-9 per frame at 60fps)
+                this.trail = [];
+                this.color = '#ff8c00'; // Softer orange
+                this.launched = false;
+                this.trailLength = 12; // Longer trail for elegance
+                this.trailFadeSpeed = 1.5; // Alpha decrease per second
+            }
+
+            update(deltaTime) {
+                if (!this.launched) {
+                    this.launched = true;
+                }
+
+                // Add trail point
+                this.trail.push({ x: this.x, y: this.y, alpha: 1 });
+
+                // Move rocket - TIME BASED
+                this.y -= this.speed * deltaTime;
+
+                // Update trail with time-based fade
+                for (let i = this.trail.length - 1; i >= 0; i--) {
+                    this.trail[i].alpha -= this.trailFadeSpeed * deltaTime; // Time-based fade
+                    if (this.trail[i].alpha <= 0) {
+                        this.trail.splice(i, 1);
+                    }
+                }
+
+                // Limit trail length for performance
+                if (this.trail.length > this.trailLength) {
+                    this.trail.shift();
+                }
+
+                // Check if reached target
+                if (this.y <= this.targetY) {
+                    this.explode();
+                    return true; // Remove rocket
+                }
+                return false;
+            }
+
+            draw() {
+                // Draw trail with optimized glow for performance
+                ctx.globalCompositeOperation = 'lighter';
+                for (let point of this.trail) {
+                    ctx.save();
+                    ctx.globalAlpha = point.alpha * 0.5; // Reduced opacity for performance
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = isMobile ? 1 : 2; // Reduced glow on mobile
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 1.2, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Draw rocket with optimized appearance
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = isMobile ? 1 : 2; // Reduced shadow on mobile
+                ctx.fillRect(this.x - 1, this.y - 6, 2, 6);
+                ctx.fillRect(this.x - 0.5, this.y - 9, 1, 3);
+            }
+
+            explode() {
+                const particleCount = Math.floor(random(15, maxParticlesPerExplosion)); // Dynamic particle count based on screen size
+                const colors = [randomColor(), randomColor()];
+
+                // Small delay before explosion for natural timing
+                setTimeout(() => {
+                    for (let i = 0; i < particleCount; i++) {
+                        const angle = random(0, Math.PI * 2);
+                        const speed = random(120, 360); // Pixels per second (was 2-6 per frame at 60fps)
+                        const life = random(1500, 2333); // Life in milliseconds (was 90-140 frames at 60fps)
+                        const color = colors[Math.floor(random(0, colors.length))];
+
+                        particles.push(new Particle(this.x, this.y, angle, speed, life, color));
+                    }
+                }, 50); // Small 50ms delay for natural timing
+            }
+        }
+
+        class Particle {
+            constructor(x, y, angle, speed, life, color) {
+                this.x = x;
+                this.y = y;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.life = life; // Now in milliseconds
+                this.maxLife = life;
+                this.color = color;
+                this.trail = [];
+                this.gravity = 48; // Pixels per second squared (was 0.08 per frame at 60fps)
+                this.friction = 0.994; // Per second friction (was 0.992 per frame)
+                this.trailLength = 8; // Shorter trail for elegance
+                this.trailFadeSpeed = 2.4; // Alpha decrease per second
+            }
+
+            update(deltaTime) {
+                // Add trail point
+                this.trail.push({ x: this.x, y: this.y, alpha: 1 });
+
+                // Update position with time-based physics
+                this.x += this.vx * deltaTime;
+                this.y += this.vy * deltaTime;
+                this.vy += this.gravity * deltaTime; // Time-based gravity
+                this.vx *= Math.pow(this.friction, deltaTime * 60); // Time-based friction (normalized)
+                this.vy *= Math.pow(this.friction, deltaTime * 60); // Time-based friction (normalized)
+
+                // Update trail with time-based fade
+                for (let i = this.trail.length - 1; i >= 0; i--) {
+                    this.trail[i].alpha -= this.trailFadeSpeed * deltaTime; // Time-based fade
+                    if (this.trail[i].alpha <= 0) {
+                        this.trail.splice(i, 1);
+                    }
+                }
+
+                // Limit trail length
+                if (this.trail.length > this.trailLength) {
+                    this.trail.shift();
+                }
+
+                this.life -= deltaTime * 1000; // Decrease life (convert deltaTime to milliseconds)
+                return this.life <= 0;
+            }
+
+            draw() {
+                const alpha = this.life / this.maxLife;
+                const easedAlpha = alpha * alpha; // Ease-out effect
+
+                // Draw trail with optimized glow
+                ctx.globalCompositeOperation = 'lighter';
+                for (let point of this.trail) {
+                    ctx.save();
+                    ctx.globalAlpha = point.alpha * easedAlpha * 0.6; // Reduced brightness for performance
+                    ctx.fillStyle = this.color;
+                    ctx.shadowColor = this.color;
+                    ctx.shadowBlur = isMobile ? 0.5 : 1; // Minimal glow on mobile, light on desktop
+                    ctx.beginPath();
+                    ctx.arc(point.x, point.y, 0.6, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.restore();
+                }
+
+                // Draw particle with optimized fade (no heavy blur filter)
+                ctx.save();
+                ctx.globalAlpha = easedAlpha;
+                ctx.fillStyle = this.color;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = isMobile ? 0.5 : 1; // Minimal shadow on mobile
+                // Removed heavy blur filter for performance
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 1.2 * particleScale, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function createStars(count) {
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = random(0, 100) + 'vw';
+                star.style.top = random(0, 100) + 'vh';
+                star.style.animationDelay = random(0, 3) + 's';
+                star.style.opacity = random(0.1, 0.8);
+                star.style.width = star.style.height = random(1, 3) + 'px';
+                star.style.animationDuration = random(2, 6) + 's';
+                document.body.appendChild(star);
+            }
+        }
+
+        function launchFirework() {
+            // Avoid center area where text is located
+            const positions = [
+                { x: random(0.05, 0.25) * canvas.width, y: random(0.15, 0.35) * canvas.height }, // Left side
+                { x: random(0.75, 0.95) * canvas.width, y: random(0.15, 0.35) * canvas.height }, // Right side
+                { x: random(0.1, 0.3) * canvas.width, y: random(0.05, 0.2) * canvas.height }, // Top left
+                { x: random(0.7, 0.9) * canvas.width, y: random(0.05, 0.2) * canvas.height }  // Top right
+            ];
+
+            const pos = positions[Math.floor(random(0, positions.length))];
+            fireworks.push(new Rocket(pos.x, pos.y));
+        }
+
+        function particleRain() {
+            const rain = document.createElement('div');
+            rain.className = 'particle-rain';
+            rain.style.left = random(0, 100) + 'vw';
+            rain.style.animationDuration = random(2, 4) + 's';
+            document.body.appendChild(rain);
+            setTimeout(() => rain.remove(), 4000);
+        }
+
+        function floatingHearts() {
+            const heart = document.createElement('div');
+            heart.className = 'heart';
+            heart.style.left = random(10, 90) + 'vw';
+            heart.style.top = random(85, 98) + 'vh';
+            heart.style.animationDuration = random(3.2, 5.8) + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6200);
+        }
+
+        function showMessage(text) {
+            const feedback = document.getElementById('feedback');
+            document.getElementById('feedback-text').textContent = text;
+            feedback.classList.add('show');
+        }
+
+        function hideMessage() {
+            document.getElementById('feedback').classList.remove('show');
+        }
+
+        function animate(currentTime) {
+            // Calculate delta time for frame-rate independent animation
+            const deltaTime = Math.min((currentTime - lastTime) / 1000, 0.1); // Cap at 0.1s to prevent large jumps
+            lastTime = currentTime;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw fireworks - remove completed ones
+            for (let i = fireworks.length - 1; i >= 0; i--) {
+                fireworks[i].draw();
+                if (fireworks[i].update(deltaTime)) { // Pass deltaTime
+                    fireworks.splice(i, 1); // Completely remove finished fireworks
+                }
+            }
+
+            // Update and draw particles - remove dead ones
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].draw();
+                if (particles[i].update(deltaTime)) { // Pass deltaTime
+                    particles.splice(i, 1); // Completely remove dead particles
+                }
+            }
+
+            // Memory cleanup: prevent excessive buildup
+            if (particles.length > 500) { // Emergency cleanup if too many particles
+                particles = particles.slice(-300); // Keep only the most recent 300
+            }
+
+            animationId = requestAnimationFrame(animate);
+        }
+
+        function init() {
+            resizeCanvas();
+            createStars(isSmallScreen ? 60 : 120); // Fewer stars on small screens
+            lastTime = performance.now(); // Initialize time for delta calculation
+            initMusic(); // Initialize music playback
+            animate(lastTime); // Start animation with initial time
+
+            // Launch fireworks continuously with balanced frequency
+            setInterval(() => {
+                if (fireworks.length < maxFireworks) {
+                    launchFirework();
+                }
+            }, random(1000, 1200)); // 1-1.2 second intervals
+
+            // Extra effects with reduced frequency on mobile
+            const heartInterval = isSmallScreen ? 6000 : isMobile ? 5000 : 4000;
+            const rainInterval = isSmallScreen ? 1000 : isMobile ? 800 : 600;
+
+            setInterval(floatingHearts, heartInterval); // Less frequent hearts on mobile
+            setInterval(particleRain, rainInterval); // Less frequent rain on mobile
+        }
+
+        // Event listeners
+        window.addEventListener('resize', resizeCanvas);
+        document.querySelectorAll('.wish-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showMessage(btn.getAttribute('data-wish'));
+            });
+        });
+
+        document.getElementById('feedback-close').addEventListener('click', hideMessage);
+
+        // Performance optimization
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                cancelAnimationFrame(animationId);
+            } else {
+                lastTime = performance.now(); // Reset time to prevent large deltaTime jump
+                animate(lastTime); // Restart animation
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>
