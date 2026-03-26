@@ -1,874 +1,452 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Birthday Surprise 🎉</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday Stevanny</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+        :root {
+            --bg-1: #091225;
+            --bg-2: #142d63;
+            --bg-3: #f04e98;
+            --glow-pink: #ff7bc0;
+            --glow-blue: #7bd4ff;
+            --glass: rgba(255, 255, 255, 0.14);
+            --glass-border: rgba(255, 255, 255, 0.24);
+            --text: #f9fbff;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
 
         body {
             margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: black;
-            color: white;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1),
-                        opacity 1.5s ease,
-                        transform 1.5s ease,
-                        filter 1.5s ease;
-            opacity: 1;
-            transform: scale(1);
-            filter: blur(0);
-        }
-
-        body.transition {
-            background: linear-gradient(180deg, #7fbfff 0%, #0f2e60 50%, #001035 100%);
-            opacity: 0;
-            transform: scale(1.03);
-            filter: blur(2px);
-        }
-
-        #get-ready {
-            font-size: 4vw;
-            text-align: center;
-        }
-
-        #countdown {
-            font-size: 15vw;
-            text-align: center;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-
-        #message {
-            display: block;
-            font-size: 5.5vw;
-            font-family: 'Playfair Display', serif;
-            font-weight: 700;
-            text-align: center;
-            letter-spacing: 2px;
-            position: relative;
-            z-index: 15;
-            animation: messageAppear 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
-                        glowPulse 2s ease-in-out 1.2s infinite,
-                        breathe 3s ease-in-out 2.2s infinite;
-            white-space: nowrap;
-        }
-
-        .emoji {
-            font-style: normal;
-            display: inline-block;
-            margin: 0 0.3em;
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, #87ceeb, #4da6ff, #0052cc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 12px rgba(74, 166, 255, 0.5))
-                    drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        #surprise-btn {
-            display: none;
-            margin-top: 3vw;
-            padding: 1.5vw 3vw;
-            font-size: 2vw;
-            font-family: Arial, sans-serif;
-            font-weight: bold;
-            border: none;
-            border-radius: 50px;
-            cursor: pointer;
-            background: linear-gradient(135deg, #ff1493, #9370db, #87ceeb);
-            color: white;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.6),
-                        0 0 40px rgba(147, 112, 219, 0.4),
-                        0 4px 15px rgba(0, 0, 0, 0.3);
-            animation: buttonPulse 2s ease-in-out 3s infinite,
-                        buttonAppear 0.8s ease-out 3s forwards;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            z-index: 16;
+            min-height: 100vh;
+            font-family: "Poppins", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 20% 20%, rgba(123, 212, 255, 0.22), transparent 24%),
+                radial-gradient(circle at 80% 18%, rgba(240, 78, 152, 0.22), transparent 26%),
+                linear-gradient(145deg, var(--bg-1), var(--bg-2) 58%, #220a38 100%);
+            overflow-x: hidden;
+            overflow-y: auto;
             position: relative;
         }
 
-        #surprise-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 30px rgba(255, 20, 147, 0.8),
-                        0 0 60px rgba(147, 112, 219, 0.6),
-                        0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        #surprise-btn:active {
-            transform: scale(0.98);
-        }
-
-        #music-btn {
-            position: fixed;
-            top: 18px;
-            right: 18px;
-            z-index: 50;
-            padding: 10px 16px;
-            border: none;
-            border-radius: 999px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-        }
-
-        #page-frame {
-            position: fixed;
-            inset: 0;
-            width: 100vw;
-            height: 100vh;
-            border: none;
-            display: none;
-            z-index: 60;
-            background: transparent;
-        }
-
-        body.shell-active > #get-ready,
-        body.shell-active > #countdown,
-        body.shell-active > #message-container {
-            display: none !important;
-        }
-
-        @keyframes buttonPulse {
-            0%, 100% {
-                box-shadow: 0 0 20px rgba(255, 20, 147, 0.6),
-                            0 0 40px rgba(147, 112, 219, 0.4),
-                            0 4px 15px rgba(0, 0, 0, 0.3);
-            }
-            50% {
-                box-shadow: 0 0 30px rgba(255, 20, 147, 0.8),
-                            0 0 60px rgba(147, 112, 219, 0.6),
-                            0 4px 20px rgba(0, 0, 0, 0.4);
-            }
-        }
-
-        @keyframes buttonAppear {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .flash {
-            background: white !important;
-        }
-
-        .pink-bg {
-            background: pink !important;
-        }
-
-        #message-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 20;
-            transition: opacity 1.5s ease;
-            opacity: 1;
-        }
-
-        #message-container.fade-out {
-            opacity: 0;
-        }
-
-        .particle {
+        .background-glow,
+        .background-glow::before,
+        .background-glow::after {
             position: absolute;
-            width: 8px;
-            height: 8px;
-            background: red;
-            border-radius: 50%;
-            opacity: 1;
-            transition: transform 1s ease-out, opacity 1s ease-out;
+            inset: auto;
+            border-radius: 999px;
+            filter: blur(18px);
+            opacity: 0.7;
+            pointer-events: none;
+            content: "";
         }
 
-        .particle.square { border-radius: 0; }
-        .particle.blue { background: blue; }
-        .particle.yellow { background: yellow; }
-        .particle.green { background: green; }
-        .particle.pink { background: pink; }
+        .background-glow {
+            width: 260px;
+            height: 260px;
+            background: rgba(123, 212, 255, 0.2);
+            top: -80px;
+            right: -30px;
+            animation: drift 12s ease-in-out infinite alternate;
+        }
+
+        .background-glow::before {
+            width: 240px;
+            height: 240px;
+            background: rgba(255, 123, 192, 0.16);
+            top: 290px;
+            left: -100px;
+            animation: drift 14s ease-in-out infinite alternate-reverse;
+        }
+
+        .background-glow::after {
+            width: 190px;
+            height: 190px;
+            background: rgba(255, 226, 138, 0.15);
+            top: 470px;
+            right: 180px;
+            animation: drift 10s ease-in-out infinite alternate;
+        }
+
+        .balloon-layer {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
 
         .balloon {
             position: absolute;
-            bottom: -150px;
-            width: 4vw;
-            height: 5vw;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            background: linear-gradient(to bottom, #ffcccc, #cc0000);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            animation: floatUp 10s linear infinite;
+            bottom: -180px;
+            width: 78px;
+            height: 98px;
+            border-radius: 50% 50% 48% 48%;
+            opacity: 0.95;
+            animation: floatUp linear infinite;
+            box-shadow: inset -10px -14px 20px rgba(0, 0, 0, 0.14);
         }
 
         .balloon::before {
-            content: '';
+            content: "";
             position: absolute;
-            bottom: -5px;
+            width: 18px;
+            height: 18px;
             left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 3px solid transparent;
-            border-right: 3px solid transparent;
-            border-top: 5px solid #cc0000;
+            bottom: -8px;
+            transform: translateX(-50%) rotate(45deg);
+            background: inherit;
+            border-radius: 3px;
         }
 
         .balloon::after {
-            display: none;
+            content: "";
+            position: absolute;
+            left: 50%;
+            top: 98px;
+            width: 2px;
+            height: 120px;
+            transform: translateX(-50%);
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.8), rgba(255, 255, 255, 0.08));
         }
 
-        .balloon.pink { background: linear-gradient(to bottom, #ffdddd, #ff69b4); }
-        .balloon.pink::before { border-top-color: #ff69b4; }
-        .balloon.blue { background: linear-gradient(to bottom, #cceeff, #0066cc); }
-        .balloon.blue::before { border-top-color: #0066cc; }
-        .balloon.yellow { background: linear-gradient(to bottom, #ffffcc, #ffcc00); }
-        .balloon.yellow::before { border-top-color: #ffcc00; }
-        .balloon.green { background: linear-gradient(to bottom, #ddffdd, #009900); }
-        .balloon.green::before { border-top-color: #009900; }
-
-        @keyframes messageAppear {
-            0% { 
-                opacity: 0;
-                transform: scale(0.3) translateY(30px);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        @keyframes glowPulse {
-            0%, 100% {
-                filter: drop-shadow(0 0 12px rgba(74, 166, 255, 0.5))
-                        drop-shadow(0 0 25px rgba(0, 82, 204, 0.3))
-                        drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-            }
-            50% {
-                filter: drop-shadow(0 0 20px rgba(74, 166, 255, 0.7))
-                        drop-shadow(0 0 40px rgba(0, 82, 204, 0.5))
-                        drop-shadow(0 0 60px rgba(135, 206, 235, 0.4))
-                        drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.4));
-            }
-        }
-
-        @keyframes breathe {
-            0%, 100% {
-                transform: scale(1) translateY(0);
-            }
-            50% {
-                transform: scale(1.02) translateY(-3px);
-            }
-        }
+        .balloon.b1 { left: 6%; background: linear-gradient(180deg, #ff9ed0, #ff4e97); animation-duration: 16s; animation-delay: -2s; }
+        .balloon.b2 { left: 18%; width: 64px; height: 84px; background: linear-gradient(180deg, #8fe3ff, #4ca7ff); animation-duration: 14s; animation-delay: -8s; }
+        .balloon.b3 { left: 32%; background: linear-gradient(180deg, #ffe494, #ffb347); animation-duration: 18s; animation-delay: -4s; }
+        .balloon.b4 { left: 52%; width: 70px; height: 90px; background: linear-gradient(180deg, #bba8ff, #7a69ff); animation-duration: 15s; animation-delay: -11s; }
+        .balloon.b5 { left: 72%; background: linear-gradient(180deg, #9ff2bf, #37c978); animation-duration: 17s; animation-delay: -6s; }
+        .balloon.b6 { left: 86%; width: 68px; height: 86px; background: linear-gradient(180deg, #ffc2a8, #ff7f50); animation-duration: 13s; animation-delay: -9s; }
 
         .sparkle {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: white;
+            position: absolute;
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
-            box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
-            animation: sparkleGlow 1.5s ease-in-out infinite,
-                        sparkleFloat 4s ease-in-out infinite;
+            background: white;
+            box-shadow: 0 0 14px rgba(255, 255, 255, 0.95);
+            animation: twinkle 3.4s ease-in-out infinite;
             pointer-events: none;
-            z-index: 8;
         }
 
-        @keyframes sparkleGlow {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
+        .sparkle.s1 { top: 14%; left: 12%; animation-delay: 0s; }
+        .sparkle.s2 { top: 18%; left: 78%; animation-delay: 1s; }
+        .sparkle.s3 { top: 66%; left: 16%; animation-delay: 2s; }
+        .sparkle.s4 { top: 72%; left: 82%; animation-delay: 1.5s; }
+        .sparkle.s5 { top: 26%; left: 52%; animation-delay: 0.5s; }
+
+        main {
+            position: relative;
+            z-index: 2;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px 48px;
         }
 
-        @keyframes sparkleFloat {
-            0%, 100% { transform: translateY(0) translateX(0); }
-            25% { transform: translateY(-5px) translateX(3px); }
-            50% { transform: translateY(-8px) translateX(0); }
-            75% { transform: translateY(-3px) translateX(-3px); }
+        .hero {
+            width: min(100%, 860px);
+            padding: clamp(28px, 5vw, 54px);
+            border-radius: 32px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+            border: 1px solid var(--glass-border);
+            box-shadow:
+                0 18px 60px rgba(0, 0, 0, 0.28),
+                inset 0 1px 0 rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(14px);
+            text-align: center;
+        }
+
+        .eyebrow {
+            margin: 0 0 12px;
+            font-size: 0.92rem;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.82);
+        }
+
+        h1 {
+            margin: 0;
+            font-family: "Sora", sans-serif;
+            font-size: clamp(2.6rem, 8vw, 5.8rem);
+            line-height: 0.98;
+            text-wrap: balance;
+            text-shadow:
+                0 0 10px rgba(255, 255, 255, 0.9),
+                0 0 28px rgba(255, 123, 192, 0.7),
+                0 0 48px rgba(123, 212, 255, 0.55);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ffffff 0%, #ffd7e9 24%, #99ddff 58%, #ffffff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            width: min(100%, 560px);
+            margin: 20px auto 0;
+            font-size: clamp(1rem, 2.6vw, 1.18rem);
+            line-height: 1.7;
+            color: rgba(248, 251, 255, 0.86);
+        }
+
+        .cta {
+            margin-top: 30px;
+            border: none;
+            border-radius: 999px;
+            padding: 16px 32px;
+            font: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(135deg, #ff5ca8, #7d6bff 50%, #46c7ff);
+            box-shadow:
+                0 14px 28px rgba(0, 0, 0, 0.24),
+                0 0 24px rgba(255, 92, 168, 0.42),
+                0 0 34px rgba(70, 199, 255, 0.22);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+        }
+
+        .cta:hover {
+            transform: translateY(-2px) scale(1.02);
+            filter: brightness(1.05);
+            box-shadow:
+                0 16px 32px rgba(0, 0, 0, 0.28),
+                0 0 28px rgba(255, 92, 168, 0.5),
+                0 0 42px rgba(70, 199, 255, 0.3);
+        }
+
+        .cta:active {
+            transform: scale(0.98);
         }
 
         @keyframes floatUp {
-            0% { transform: translateY(0) translateX(0); }
-            25% { transform: translateY(-25vh) translateX(5px); }
-            50% { transform: translateY(-50vh) translateX(-5px); }
-            75% { transform: translateY(-75vh) translateX(3px); }
-            100% { transform: translateY(-120vh) translateX(0); }
+            0% {
+                transform: translate3d(0, 0, 0) rotate(0deg);
+            }
+            50% {
+                transform: translate3d(16px, -52vh, 0) rotate(4deg);
+            }
+            100% {
+                transform: translate3d(-14px, -125vh, 0) rotate(-4deg);
+            }
+        }
+
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.25;
+                transform: scale(0.85);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.25);
+            }
+        }
+
+        @keyframes drift {
+            from {
+                transform: translate3d(0, 0, 0) scale(1);
+            }
+            to {
+                transform: translate3d(18px, 24px, 0) scale(1.08);
+            }
         }
 
         @media (max-width: 768px) {
-            #message {
-                font-size: 6vw;
-                letter-spacing: 1px;
+            main {
+                align-items: flex-start;
+                padding: 28px 16px 36px;
             }
-            .emoji { margin: 0 0.25em; }
-            .sparkle { width: 3px; height: 3px; }
-            #surprise-btn {
-                font-size: 2.5vw;
-                padding: 2vw 4vw;
-                margin-top: 4vw;
+
+            .hero {
+                margin-top: 12px;
+            }
+
+            .subtitle {
+                margin-top: 16px;
+            }
+
+            .cta {
+                width: 100%;
+                padding: 15px 22px;
+                margin-top: 26px;
             }
         }
 
-        @media (max-width: 600px) {
-            #get-ready { font-size: 8vw; }
-            #countdown { font-size: 20vw; }
-            #message { 
-                font-size: 7vw;
-                letter-spacing: 0.5px;
-                padding: 0 10px;
+        @media (max-width: 640px) {
+            .hero {
+                border-radius: 26px;
+                padding: 28px 20px 30px;
             }
-            .emoji { margin: 0 0.2em; font-size: 5.5vw; }
-            .balloon { width: 6vw; height: 8vw; }
-            .balloon::after { height: 20px; }
-            .sparkle { width: 2.5px; height: 2.5px; }
-            #surprise-btn {
-                font-size: 3vw;
-                padding: 2.5vw 5vw;
-                margin-top: 5vw;
+
+            .cta {
+                width: 100%;
+                padding: 15px 22px;
             }
         }
     </style>
 </head>
 <body>
-    <div id="get-ready">Get ready…</div>
-    <div id="countdown"></div>
-    <div id="message-container">
-        <div id="message">
-            <span class="emoji">🎉</span>
-            <span class="text-gradient">Happy Birthday Stevanny</span>
-            <span class="emoji">❤️</span>
-            <span class="emoji">🎂</span>
-        </div>
-        <button id="surprise-btn">🎁 Click here to see your surprise!</button>
-        <!-- Top sparkles -->
-        <div class="sparkle" style="top: 15%; left: 10%; animation-delay: 0s;"></div>
-        <div class="sparkle" style="top: 10%; left: 50%; transform: translateX(-50%); animation-delay: 0.3s;"></div>
-        <div class="sparkle" style="top: 12%; right: 8%; animation-delay: 0.6s;"></div>
-        <!-- Side sparkles -->
-        <div class="sparkle" style="top: 45%; left: 5%; animation-delay: 0.9s;"></div>
-        <div class="sparkle" style="top: 50%; right: 6%; animation-delay: 1.2s;"></div>
-        <!-- Bottom sparkles -->
-        <div class="sparkle" style="bottom: 18%; left: 12%; animation-delay: 1.5s;"></div>
-        <div class="sparkle" style="bottom: 15%; left: 50%; transform: translateX(-50%); animation-delay: 1.8s;"></div>
-        <div class="sparkle" style="bottom: 20%; right: 10%; animation-delay: 0.4s;"></div>
-        <!-- Extra sparkles for more magic -->
-        <div class="sparkle" style="top: 30%; left: 15%; animation-delay: 1.1s;"></div>
-        <div class="sparkle" style="top: 65%; right: 12%; animation-delay: 0.7s;"></div>
+    <div class="background-glow"></div>
+
+    <div class="balloon-layer" aria-hidden="true">
+        <div class="balloon b1"></div>
+        <div class="balloon b2"></div>
+        <div class="balloon b3"></div>
+        <div class="balloon b4"></div>
+        <div class="balloon b5"></div>
+        <div class="balloon b6"></div>
+        <div class="sparkle s1"></div>
+        <div class="sparkle s2"></div>
+        <div class="sparkle s3"></div>
+        <div class="sparkle s4"></div>
+        <div class="sparkle s5"></div>
     </div>
 
-    <!-- Background Music -->
-    <audio id="bg-music" loop preload="auto" playsinline crossorigin="anonymous">
-        <!-- Free Happy Birthday piano instrumental -->
-        <source src="https://www.soundjay.com/misc/sounds/happy-birthday-piano-instrumental.mp3" type="audio/mpeg">
-        <source src="https://www.soundjay.com/misc/sounds/happy-birthday-piano-instrumental.wav" type="audio/wav">
-        <!-- Fallback: Simple bell sound if piano not available -->
-        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
-    </audio>
-    <button id="music-btn" type="button">Play Music</button>
-    <iframe id="page-frame" title="Birthday Pages"></iframe>
+    <main>
+        <section class="hero">
+            <p class="eyebrow">A little birthday moment</p>
+            <h1><span class="gradient-text">Happy Birthday Stevanny</span></h1>
+            <p class="subtitle">Balloons are up, lights are glowing, and your surprise is waiting on the next page.</p>
+            <button class="cta" id="surpriseButton" type="button">Click here to see your surprise</button>
+        </section>
+    </main>
 
     <script>
-        let countdownEl = document.getElementById('countdown');
-        let messageEl = document.getElementById('message');
-        let body = document.body;
-        let bgMusic = document.getElementById('bg-music');
-        let musicBtn = document.getElementById('music-btn');
-        let pageFrame = document.getElementById('page-frame');
-        let musicStarted = false;
-        let musicReady = false;
-        let musicFallbackBound = false;
-        let fadeInterval = null;
-        let musicSourceFailed = false;
-        let synthContext = null;
-        let synthGain = null;
-        let synthStarted = false;
-        let synthLoopTimeout = null;
-
-        const NOTE_FREQUENCIES = {
-            C4: 261.63,
-            D4: 293.66,
-            E4: 329.63,
-            F4: 349.23,
-            G4: 392.00,
-            A4: 440.00,
-            AS4: 466.16,
-            C5: 523.25
+        const musicState = {
+            context: null,
+            gain: null,
+            playing: false,
+            sequenceId: 0
         };
 
-        const HAPPY_BIRTHDAY_MELODY = [
-            ['C4', 0.32], ['C4', 0.18], ['D4', 0.5], ['C4', 0.5], ['F4', 0.5], ['E4', 0.9],
-            ['C4', 0.32], ['C4', 0.18], ['D4', 0.5], ['C4', 0.5], ['G4', 0.5], ['F4', 0.9],
-            ['C4', 0.32], ['C4', 0.18], ['C5', 0.5], ['A4', 0.5], ['F4', 0.5], ['E4', 0.5], ['D4', 0.9],
-            ['AS4', 0.32], ['AS4', 0.18], ['A4', 0.5], ['F4', 0.5], ['G4', 0.5], ['F4', 1.1]
-        ];
+        function ensureAudioContext() {
+            if (!musicState.context) {
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContextClass) {
+                    return null;
+                }
 
-        const MUSIC_STORAGE_KEY = 'birthdayMusicPlaying';
-        const MUSIC_TIME_KEY = 'birthdayMusicTime';
-        const MUSIC_VOLUME_KEY = 'birthdayMusicVolume';
-        const DEFAULT_MUSIC_VOLUME = 0.45;
-
-        // Music management functions
-        function initMusic() {
-            bgMusic.load();
-
-            bgMusic.addEventListener('canplay', () => {
-                musicReady = true;
-            });
-
-            bgMusic.addEventListener('error', () => {
-                console.log('Music failed to load:', bgMusic.currentSrc || 'no source');
-                musicSourceFailed = true;
-            });
-
-            const savedTime = parseFloat(sessionStorage.getItem(MUSIC_TIME_KEY) || '0');
-            if (!Number.isNaN(savedTime) && savedTime > 0) {
-                bgMusic.currentTime = savedTime;
+                musicState.context = new AudioContextClass();
+                musicState.gain = musicState.context.createGain();
+                musicState.gain.gain.value = 0.05;
+                musicState.gain.connect(musicState.context.destination);
             }
 
-            // Check if music should be playing (from previous page)
-            if (sessionStorage.getItem(MUSIC_STORAGE_KEY) === 'true') {
-                startMusicWithFadeIn();
-            }
-
-            updateMusicButton();
+            return musicState.context;
         }
 
-        function startMusicWithFadeIn() {
-            if (musicStarted) return; // Prevent multiple starts
-            musicStarted = true;
-            const shouldResume = sessionStorage.getItem(MUSIC_STORAGE_KEY) === 'true';
-            const savedTime = parseFloat(sessionStorage.getItem(MUSIC_TIME_KEY) || '0');
-            const targetVolume = parseFloat(sessionStorage.getItem(MUSIC_VOLUME_KEY) || String(DEFAULT_MUSIC_VOLUME));
+        function noteFrequency(note) {
+            const map = {
+                C4: 261.63,
+                D4: 293.66,
+                E4: 329.63,
+                F4: 349.23,
+                G4: 392.0,
+                A4: 440.0,
+                Bb4: 466.16,
+                C5: 523.25
+            };
+            return map[note];
+        }
 
-            if (musicSourceFailed || bgMusic.querySelectorAll('source').length === 0) {
-                startSynthMusicWithFadeIn();
+        function scheduleHappyBirthday(loop = true) {
+            const context = ensureAudioContext();
+            if (!context || musicState.playing) {
                 return;
             }
 
-            if (!Number.isNaN(savedTime) && savedTime > 0) {
-                bgMusic.currentTime = savedTime;
-            }
+            const melody = [
+                ["G4", 0.32], ["G4", 0.2], ["A4", 0.52], ["G4", 0.52], ["C5", 0.52], ["B4", 0.92],
+                ["G4", 0.32], ["G4", 0.2], ["A4", 0.52], ["G4", 0.52], ["D5", 0.52], ["C5", 0.92],
+                ["G4", 0.32], ["G4", 0.2], ["G5", 0.52], ["E5", 0.52], ["C5", 0.52], ["B4", 0.52], ["A4", 0.92],
+                ["F5", 0.32], ["F5", 0.2], ["E5", 0.52], ["C5", 0.52], ["D5", 0.52], ["C5", 1.0]
+            ];
 
-            // Set initial volume to 0
-            bgMusic.volume = shouldResume ? targetVolume : 0;
-            bgMusic.muted = false;
-
-            // Try to start playing immediately (may be blocked by browser)
-            const playPromise = bgMusic.play();
-
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    // Resume immediately when coming from another page, otherwise fade in
-                    if (shouldResume) {
-                        bgMusic.volume = targetVolume;
-                        persistMusicState();
-                    } else {
-                        performFadeIn();
-                    }
-                }).catch(error => {
-                    console.log('Music autoplay blocked by browser, will start on user interaction:', error);
-                    if (error && error.name !== 'NotAllowedError') {
-                        musicSourceFailed = true;
-                    }
-                    // Set up fallback for user interaction
-                    setupMusicFallback();
-                });
-            }
-        }
-
-        function performFadeIn() {
-            if (fadeInterval) {
-                clearInterval(fadeInterval);
-            }
-
-            // Fade in over 3 seconds to target volume
-            const targetVolume = parseFloat(sessionStorage.getItem(MUSIC_VOLUME_KEY) || String(DEFAULT_MUSIC_VOLUME));
-            const fadeDuration = 3000; // 3 seconds
-            const fadeSteps = 60; // 60 fps
-            const volumeStep = targetVolume / fadeSteps;
-            const stepDuration = fadeDuration / fadeSteps;
-
-            let currentStep = 0;
-            fadeInterval = setInterval(() => {
-                currentStep++;
-                bgMusic.volume = Math.min(volumeStep * currentStep, targetVolume);
-
-                if (currentStep >= fadeSteps) {
-                    clearInterval(fadeInterval);
-                    fadeInterval = null;
-                    persistMusicState();
-                }
-            }, stepDuration);
-        }
-
-        function persistMusicState() {
-            const audioPlaying = bgMusic && !bgMusic.paused && !bgMusic.ended;
-            if (!audioPlaying && !synthStarted) {
-                return;
-            }
-
-            sessionStorage.setItem(MUSIC_STORAGE_KEY, 'true');
-            sessionStorage.setItem(MUSIC_VOLUME_KEY, String(DEFAULT_MUSIC_VOLUME));
-            if (audioPlaying && !Number.isNaN(bgMusic.currentTime)) {
-                sessionStorage.setItem(MUSIC_TIME_KEY, String(bgMusic.currentTime));
-            }
-        }
-
-        function setupMusicFallback() {
-            if (musicFallbackBound) return;
-            musicFallbackBound = true;
-
-            // Add event listeners for user interaction fallback
-            const startMusicOnInteraction = () => {
-                if (!musicStarted) {
-                    musicStarted = true;
-                }
-
-                if (musicSourceFailed || bgMusic.querySelectorAll('source').length === 0) {
-                    startSynthMusicWithFadeIn();
-                    document.removeEventListener('click', startMusicOnInteraction);
-                    document.removeEventListener('touchstart', startMusicOnInteraction);
-                    document.removeEventListener('keydown', startMusicOnInteraction);
-                    musicFallbackBound = false;
-                    return;
-                }
-
-                bgMusic.muted = false;
-
-                bgMusic.play().then(() => {
-                    performFadeIn();
-                    // Remove listeners after successful start
-                    document.removeEventListener('click', startMusicOnInteraction);
-                    document.removeEventListener('touchstart', startMusicOnInteraction);
-                    document.removeEventListener('keydown', startMusicOnInteraction);
-                    musicFallbackBound = false;
-                }).catch(error => {
-                    console.log('Fallback music start failed:', error);
-                    musicSourceFailed = true;
-                    startSynthMusicWithFadeIn();
-                    document.removeEventListener('click', startMusicOnInteraction);
-                    document.removeEventListener('touchstart', startMusicOnInteraction);
-                    document.removeEventListener('keydown', startMusicOnInteraction);
-                    musicFallbackBound = false;
-                });
+            const extraMap = {
+                B4: 493.88,
+                D5: 587.33,
+                E5: 659.25,
+                F5: 698.46,
+                G5: 783.99
             };
 
-            document.addEventListener('click', startMusicOnInteraction, { once: true });
-            document.addEventListener('touchstart', startMusicOnInteraction, { once: true });
-            document.addEventListener('keydown', startMusicOnInteraction, { once: true });
-        }
+            const startAt = context.currentTime + 0.08;
+            let now = startAt;
+            const currentId = ++musicState.sequenceId;
 
-        function ensureSynthContext() {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContextClass) {
-                return null;
-            }
+            musicState.playing = true;
 
-            if (!synthContext) {
-                synthContext = new AudioContextClass();
-                synthGain = synthContext.createGain();
-                synthGain.gain.value = 0;
-                synthGain.connect(synthContext.destination);
-            }
-
-            return synthContext;
-        }
-
-        function playSynthMelody() {
-            if (!synthContext || !synthGain) return;
-
-            let cursor = synthContext.currentTime + 0.05;
-            HAPPY_BIRTHDAY_MELODY.forEach(([note, duration]) => {
-                const oscillator = synthContext.createOscillator();
-                const noteGain = synthContext.createGain();
-                const endTime = cursor + duration;
-
-                oscillator.type = 'sine';
-                oscillator.frequency.value = NOTE_FREQUENCIES[note];
-
-                noteGain.gain.setValueAtTime(0.0001, cursor);
-                noteGain.gain.linearRampToValueAtTime(0.18, cursor + 0.03);
-                noteGain.gain.exponentialRampToValueAtTime(0.0001, endTime);
-
+            melody.forEach(([note, duration]) => {
+                const frequency = noteFrequency(note) || extraMap[note];
+                const oscillator = context.createOscillator();
+                const noteGain = context.createGain();
+                oscillator.type = "sine";
+                oscillator.frequency.value = frequency;
+                noteGain.gain.setValueAtTime(0.0001, now);
+                noteGain.gain.exponentialRampToValueAtTime(0.24, now + 0.04);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
                 oscillator.connect(noteGain);
-                noteGain.connect(synthGain);
-
-                oscillator.start(cursor);
-                oscillator.stop(endTime);
-                cursor = endTime + 0.03;
+                noteGain.connect(musicState.gain);
+                oscillator.start(now);
+                oscillator.stop(now + duration + 0.03);
+                now += duration + 0.04;
             });
 
-            synthLoopTimeout = window.setTimeout(playSynthMelody, Math.max((cursor - synthContext.currentTime) * 1000, 1000));
-        }
-
-        function startSynthMusicWithFadeIn() {
-            const ctx = ensureSynthContext();
-            if (!ctx) return;
-
-            const beginPlayback = () => {
-                if (synthStarted) return;
-                synthStarted = true;
-
-                const now = ctx.currentTime;
-                synthGain.gain.cancelScheduledValues(now);
-                synthGain.gain.setValueAtTime(synthGain.gain.value, now);
-                synthGain.gain.linearRampToValueAtTime(0.2, now + 1.8);
-                playSynthMelody();
-                sessionStorage.setItem(MUSIC_STORAGE_KEY, 'true');
-                sessionStorage.setItem(MUSIC_VOLUME_KEY, String(DEFAULT_MUSIC_VOLUME));
-                updateMusicButton();
-            };
-
-            if (ctx.state === 'suspended') {
-                ctx.resume().then(beginPlayback).catch(error => {
-                    console.log('Synth music start failed:', error);
-                });
-            } else {
-                beginPlayback();
-            }
-        }
-
-        function stopMusic() {
-            if (bgMusic) {
-                if (fadeInterval) {
-                    clearInterval(fadeInterval);
-                    fadeInterval = null;
-                }
-                bgMusic.pause();
-                bgMusic.currentTime = 0;
-                sessionStorage.setItem(MUSIC_STORAGE_KEY, 'false');
-                sessionStorage.removeItem(MUSIC_TIME_KEY);
-                musicStarted = false;
-            }
-
-            if (synthLoopTimeout) {
-                clearTimeout(synthLoopTimeout);
-                synthLoopTimeout = null;
-            }
-
-            if (synthGain && synthContext) {
-                const now = synthContext.currentTime;
-                synthGain.gain.cancelScheduledValues(now);
-                synthGain.gain.setValueAtTime(synthGain.gain.value, now);
-                synthGain.gain.linearRampToValueAtTime(0.0001, now + 0.3);
-            }
-
-            synthStarted = false;
-            updateMusicButton();
-        }
-
-        function updateMusicButton() {
-            if (!musicBtn) return;
-            const isPlaying = (!bgMusic.paused && !bgMusic.ended) || synthStarted;
-            musicBtn.textContent = isPlaying ? 'Pause Music' : 'Play Music';
-        }
-
-        function toggleMusicPlayback() {
-            const isPlaying = (!bgMusic.paused && !bgMusic.ended) || synthStarted;
-            if (isPlaying) {
-                stopMusic();
-                return;
-            }
-
-            musicStarted = false;
-            startMusicWithFadeIn();
-        }
-
-        function navigateWithinShell(targetPage) {
-            persistMusicState();
-            body.classList.add('shell-active');
-            body.classList.remove('transition', 'flash', 'pink-bg');
-            pageFrame.src = targetPage;
-            pageFrame.style.display = 'block';
-        }
-
-        function showHomePage() {
-            body.classList.remove('shell-active');
-            pageFrame.removeAttribute('src');
-            pageFrame.style.display = 'none';
-        }
-
-        // Initialize music on page load
-        initMusic();
-        setupMusicFallback();
-        musicBtn.addEventListener('click', toggleMusicPlayback);
-        window.addEventListener('pagehide', persistMusicState);
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'hidden' && !bgMusic.paused) {
-                persistMusicState();
-            }
-        });
-
-        // Start sequence
-        setTimeout(() => {
-            document.getElementById('get-ready').style.display = 'none';
-            startCountdown();
-        }, 1000);
-
-        function startCountdown() {
-            let count = 3;
-            countdownEl.textContent = count;
-            countdownEl.style.opacity = '1';
-
-            let timer = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    countdownEl.textContent = count;
-                    countdownEl.style.animation = 'none';
-                    setTimeout(() => {
-                        countdownEl.style.animation = 'fadeIn 0.5s';
-                    }, 10);
-                } else {
-                    clearInterval(timer);
-                    flashAndShowSurprise();
-                }
-            }, 1000);
-        }
-
-        function flashAndShowSurprise() {
-            countdownEl.style.display = 'none';
-            body.classList.add('flash');
-            setTimeout(() => {
-                body.classList.remove('flash');
-                body.classList.add('pink-bg');
-                showBlast();
-                document.getElementById('message-container').style.display = 'flex';
-                startBalloons();
-                // Start music synchronized with celebration
-                startMusicWithFadeIn();
-                if (navigator.vibrate) navigator.vibrate(200);
-            }, 200);
-        }
-
-        function showBlast() {
-            // Blast from bottom-left
-            blast('left');
-            // Blast from bottom-right
-            blast('right');
-            // Repeat a few times
-            setTimeout(() => blast('left'), 500);
-            setTimeout(() => blast('right'), 1000);
-            setTimeout(() => blast('left'), 1500);
-            setTimeout(() => blast('right'), 2000);
-        }
-
-        function blast(side) {
-            let originX = side === 'left' ? 0 : 100;
-            let direction = side === 'left' ? 1 : -1; // 1 for right, -1 for left
-            let colors = ['particle', 'particle blue', 'particle yellow', 'particle green', 'particle pink'];
-            for (let i = 0; i < 20; i++) {
-                let particle = document.createElement('div');
-                particle.className = colors[Math.floor(Math.random() * colors.length)];
-                if (Math.random() > 0.5) particle.classList.add('square');
-                let size = Math.random() * 6 + 4; // 4-10px
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = originX + 'vw';
-                particle.style.bottom = '0';
-                let tx = (Math.random() * 30 + 10) * direction; // 10-40vw right or left
-                let ty = Math.random() * 50 + 30; // 30-80vh up
-                let rot = Math.random() * 360;
-                body.appendChild(particle);
-                setTimeout(() => {
-                    particle.style.transform = 'translate(' + tx + 'vw, -' + ty + 'vh) rotate(' + rot + 'deg)';
-                    particle.style.opacity = '0';
-                }, 10);
-                setTimeout(() => particle.remove(), 1500);
-            }
-        }
-
-        function startBalloons() {
-            // Show button after a delay
-            setTimeout(() => {
-                document.getElementById('surprise-btn').style.display = 'block';
-            }, 3000);
-
-            setInterval(() => {
-                let balloon = document.createElement('div');
-                let colors = ['balloon', 'balloon pink', 'balloon blue', 'balloon yellow', 'balloon green'];
-                balloon.className = colors[Math.floor(Math.random() * colors.length)];
-                let size = Math.random() * 2 + 3; // 3 to 5 vw
-                balloon.style.width = size + 'vw';
-                balloon.style.height = (size * 1.25) + 'vw';
-                balloon.style.left = Math.random() * 90 + 'vw';
-                let speed = Math.random() * 5 + 8; // 8 to 13s
-                balloon.style.animationDuration = speed + 's';
-
-                // Create curved string using SVG
-                let svgString = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                svgString.setAttribute('width', '10');
-                svgString.setAttribute('height', '30');
-                svgString.style.position = 'absolute';
-                svgString.style.bottom = '-35px';
-                svgString.style.left = '50%';
-                svgString.style.transform = 'translateX(-50%)';
-                let path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-                path.setAttribute('d', 'M5 0 Q3 10 5 20 Q7 25 5 30');
-                path.setAttribute('stroke', '#333');
-                path.setAttribute('stroke-width', '1');
-                path.setAttribute('fill', 'none');
-                svgString.appendChild(path);
-                balloon.appendChild(svgString);
-
-                body.appendChild(balloon);
-                setTimeout(() => balloon.remove(), speed * 1000);
-            }, 800);
-        }
-
-        // Button click handler
-        document.getElementById('surprise-btn').addEventListener('click', function() {
-            // Try to start music if it hasn't started yet (fallback for autoplay blocking)
-            if (!musicStarted) {
-                startMusicWithFadeIn();
-            }
-
-            persistMusicState();
-
-            body.classList.add('transition');
-            document.getElementById('message-container').classList.add('fade-out');
-            setTimeout(() => {
-                navigateWithinShell('surprise.html');
-            }, 1600);
-        });
-
-        window.addEventListener('message', (event) => {
-            if (!event.data || event.source !== pageFrame.contentWindow) {
-                return;
-            }
-
-            if (event.data.type === 'birthday:navigate' && typeof event.data.page === 'string') {
-                if (event.data.page === 'index.html') {
-                    showHomePage();
-                    body.classList.remove('transition');
-                    document.getElementById('message-container').classList.remove('fade-out');
-                    document.getElementById('message-container').style.display = 'flex';
+            const totalLength = (now - startAt) * 1000;
+            window.setTimeout(() => {
+                if (musicState.sequenceId !== currentId) {
                     return;
                 }
+                musicState.playing = false;
+                if (loop) {
+                    scheduleHappyBirthday(true);
+                }
+            }, totalLength + 120);
+        }
 
-                navigateWithinShell(event.data.page);
+        async function startMusic() {
+            const context = ensureAudioContext();
+            if (!context) {
+                return;
             }
+
+            if (context.state === "suspended") {
+                try {
+                    await context.resume();
+                } catch (error) {
+                    return;
+                }
+            }
+
+            scheduleHappyBirthday(true);
+        }
+
+        window.addEventListener("load", () => {
+            startMusic();
+        }, { once: true });
+
+        ["pointerdown", "keydown", "touchstart"].forEach((eventName) => {
+            window.addEventListener(eventName, startMusic, { once: true, passive: true });
+        });
+
+        document.getElementById("surpriseButton").addEventListener("click", () => {
+            startMusic();
+            window.location.href = "surprise.html";
         });
     </script>
 </body>
